@@ -2,8 +2,7 @@
     "manifest_version":2,
     "name":"Regex Replace",
     "version":"0.0.1.0",
-    "default_locale":"en",
-    "description":"A regex Replaces matched strings with different strings.",
+    "description":"A regex engine to handle basic regular expressions on all viewed pages.",
     "browser_action":{
         "default_title":"Regex Replace Options",
         "default_icon":{

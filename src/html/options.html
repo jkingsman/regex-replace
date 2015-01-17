@@ -1,6 +1,7 @@
 <!DOCTYPE html> 
 <html>
     <head>
+	<title>Regex Replace Configuration</title>
         <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"></link>
         <script type="text/javascript" src="../js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="../js/bootstrap.min.js"></script>
@@ -12,15 +13,19 @@
     <body>
         <div id="main-outer">
             <div id="main-inner">
-                <div id="main-title">Regex Replace</div>
-		<p style="text-align: center;">
-		    Regex Replace is currently: <input type="checkbox" id="regexStatus" name="regexStatus" data-size="mini" checked>
-		    <br />
-		    <a href="" target="_blank" id="regex-opt-link">Options</a>
-		</p>
-	    </div>
+                <div id="main-title">Regex Replace Configuration</div>
+				<p>Regex Replace is currently: <input type="checkbox" id="regexStatus" name="regexStatus" data-size="mini" checked></p>
+				<hr />
+				<ul id="rules"></ul>
+				<hr />
+				<form action="#" id="addRule">
+				    <label>Search regex: <input id="search"></label> 
+				    <label>Replace string: <input id="replace"></label> 
+				    <input type="submit" class="btn btn-success" value="Add Rule"></input>
+				</form>
+            </div>
         </div>
 
-        <script type="text/javascript" src="../js/main.js"></script>
+        <script type="text/javascript" src="../js/options.js"></script>
     </body>
 </html>

@@ -1,11 +1,22 @@
-var rules = {
-	"[a-z]" : "chocolate? ",
-    "[A-Z]" : "CHOCOLATE!!!!!! "
-};
+var ruleSet;
+
+chrome.storage.sync.get(null, function (data) {
+	ruleSet = data.rules;
+
+	if(typeof data.regexStatus === 'undefined'){
+		chrome.storage.sync.set({'regexStatus': 1});
+		walk(document.body);
+	}
+	else{
+		if(parseInt(data.regexStatus)){
+			walk(document.body);
+		}
+	}	
+});
 
 chrome.storage.sync.get('regexStatus', function (data) {
-	if(typeof data.regexStatus === "undefined"){
-		chrome.storage.sync.set({"regexStatus": 1});
+	if(typeof data.regexStatus === 'undefined'){
+		chrome.storage.sync.set({'regexStatus': 1});
 		walk(document.body);
 	}
 	else{
@@ -46,13 +57,14 @@ function handleText(textNode)
 {
 	var v = textNode.nodeValue;
 	var regex;
+		
 	
-	for (var searchString in rules) {
-		if (rules.hasOwnProperty(searchString)) {
-			regex = new RegExp(searchString, "g");
-			v = v.replace(regex, rules[searchString]);
-			textNode.nodeValue = v;
-		}
+	for(var i = 0; i < ruleSet.length; i++){
+		var rule = ruleSet[i];
+		
+		regex = new RegExp(rule.searchString, 'g');
+		v = v.replace(regex, rule.replaceString);
+		textNode.nodeValue = v;
 	}
 }
 

@@ -1,7 +1,18 @@
 var ruleSet;
 
 chrome.storage.sync.get(null, function (data) {
-    ruleSet = data.rules;
+    if (typeof data.rules === 'undefined') {
+	chrome.storage.sync.set({
+            'rules': []
+	});
+	
+	ruleSet = [];
+    }
+    else{
+	ruleSet = data.rules;
+    }
+	
+	
 
     if (typeof data.regexStatus === 'undefined') {
         chrome.storage.sync.set({

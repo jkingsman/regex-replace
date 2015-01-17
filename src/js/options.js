@@ -40,7 +40,16 @@ function init_main() {
 function listRules() {
     $("#rules").empty();
     chrome.storage.sync.get('rules', function (data) {
-        ruleSet = data.rules;
+        if (typeof data.rules === 'undefined') {
+            chrome.storage.sync.set({
+                'rules': []
+            });
+            
+            ruleSet = [];
+        }
+        else{
+            ruleSet = data.rules;
+        }
 
         //print out current rules
         for (var i = 0; i < ruleSet.length; i++) {

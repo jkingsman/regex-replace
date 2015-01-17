@@ -10,6 +10,13 @@ div#main-outer {
     border-radius: 5px;
 }
 
+div#main-outer-options {
+    width: 500px;
+    margin: 5px;
+    background: #DDD;
+    border-radius: 5px;
+}
+
 div#main-inner {
     padding: 8px;
 }

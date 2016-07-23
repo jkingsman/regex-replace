@@ -37,6 +37,10 @@ function init_main() {
     $('html').hide().fadeIn('slow');
 }
 
+function htmlEncode(value){
+    return $('<div/>').text(value).html();
+}
+
 function listRules() {
     $("#rules").empty();
     chrome.storage.sync.get('rules', function (data) {
@@ -54,7 +58,7 @@ function listRules() {
         //print out current rules
         for (var i = 0; i < ruleSet.length; i++) {
             var rule = ruleSet[i];
-            $("#rules").append('<li>' + rule.searchString + ' --> ' + rule.replaceString + ' <a href="#" class="deleteButton" id="del-' + rule.key + '"><i class="glyphicon glyphicon-trash"></i></a></li>');
+            $("#rules").append('<li>' + htmlEncode(rule.searchString) + ' --> ' + htmlEncode(rule.replaceString) + ' <a href="#" class="deleteButton" id="del-' + rule.key + '"><i class="glyphicon glyphicon-trash"></i></a></li>');
         }
 
         //attach delete function listener

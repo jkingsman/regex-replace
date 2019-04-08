@@ -19,7 +19,16 @@
 				<pre>regex = new RegExp(searchString, 'g');
 textNode = textNode.replace(regex, replaceString);</pre>That regex is then applied to all text nodes.</p>
 				<hr />
-				<ul id="rules"></ul>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Search</th>
+							<th>Replace</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody id="tbody-rules"></tbody>
+				</table>
 				<hr />
 				<form action="#" id="addRule">
 				    <label>Search regex: <input id="search"></label> 

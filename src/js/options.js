@@ -1,29 +1,27 @@
 /*
-** file: js/main.js
-** description: javascript code for "html/main.html" page
-*/
+ ** file: js/main.js
+ ** description: javascript code for "html/main.html" page
+ */
 
 var ruleSet;
 
 function init_main() {
     //get the current enabled state and rule list
-    chrome.storage.sync.get('regexStatus', function (data) {
-        if (typeof data.regexStatus === "undefined") {
+    chrome.storage.sync.get('regexStatus', function(data) {
+        if (typeof data.regexStatus === 'undefined') {
             //this is first use; enable by default and save
             chrome.storage.sync.set({
-                "regexStatus": 1
+                regexStatus: 1
             });
             var isEnabled = 1;
-        }
-        else {
+        } else {
             var isEnabled = parseInt(data.regexStatus);
         }
 
         //make the switch reflect our current state
         if (isEnabled) {
             $('#regexStatus').bootstrapSwitch('state', true);
-        }
-        else {
+        } else {
             $('#regexStatus').bootstrapSwitch('state', false);
         }
     });
@@ -34,48 +32,90 @@ function init_main() {
     $('#regexStatus').bootstrapSwitch();
 
     //show the menu
-    $('html').hide().fadeIn('slow');
+    $('html')
+        .hide()
+        .fadeIn('slow');
 }
 
-function htmlEncode(value){
-    return $('<div/>').text(value).html();
+function htmlEncode(value) {
+    return $('<div/>')
+        .text(value)
+        .html();
+}
+
+function array_move(arr, old_index, new_index) {
+    if (new_index >= arr.length) {
+        return arr;
+    }
+    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    return arr; // for testing
 }
 
 function listRules() {
-    $("#rules").empty();
-    chrome.storage.sync.get('rules', function (data) {
+    $('#rules').empty();
+    $('#tbody-rules').empty();
+    chrome.storage.sync.get('rules', function(data) {
         if (typeof data.rules === 'undefined') {
             chrome.storage.sync.set({
-                'rules': []
+                rules: []
             });
-            
+
             ruleSet = [];
-        }
-        else{
+        } else {
             ruleSet = data.rules;
         }
 
         //print out current rules
-        for (var i = 0; i < ruleSet.length; i++) {
-            var rule = ruleSet[i];
-            $("#rules").append('<li>' + htmlEncode(rule.searchString) + ' --> ' + htmlEncode(rule.replaceString) + ' <a href="#" class="deleteButton" id="del-' + rule.key + '"><i class="glyphicon glyphicon-trash"></i></a></li>');
-        }
+        ruleSet.forEach(function(rule, i) {
+            let moveUp = '<i class="glyphicon glyphicon-stop"></i>';
+            let moveDown = '<i class="glyphicon glyphicon-stop"></i>';
+            if (i !== 0) {
+                moveUp = `<a href="#" class="moveUp" data-index="${i}">
+                    <i class="glyphicon glyphicon-arrow-up"></i></a>`;
+            }
+            if (i < ruleSet.length - 1) {
+                moveDown = `<a href="#" class="moveDown" data-index="${i}">
+                    <i class="glyphicon glyphicon-arrow-down"></i></a>`;
+            }
+            $('#tbody-rules').append(
+                `<tr>
+                    <td><code>${htmlEncode(rule.searchString)}</code></td>
+                    <td><code>${htmlEncode(rule.replaceString)}</code></td>
+                    <td>
+                        ${moveUp}
+                        ${moveDown}
+                        <a href="#" class="deleteButton" data-index="${i}" id="del-${rule.key}">
+                            <i class="glyphicon glyphicon-trash"></i></a>
+                        
+                    </td>
+                </tr>`
+            );
+        });
 
         //attach delete function listener
-        $('.deleteButton').click(function () {
-            for (var i = 0; i < ruleSet.length; i++) {
-                //this is somewhat unnecessary; we could just go by array key but it keeps us resilient if they have two tabs open
-                var rule = ruleSet[i];
-                if ($(this).attr('id').replace(/\D/g,'') == rule.key) {
-                    ruleSet.splice(i, 1);
-                    chrome.storage.sync.set({"rules": ruleSet});
-                    $(this).parent().remove();
-                }
+        $('.deleteButton').click(function() {
+            if (!confirm('Are you sure?')) {
+                return;
             }
 
-            chrome.storage.sync.set({
-                "rules": ruleSet
-            });
+            let idx = parseInt($(this).attr('data-index'));
+            ruleSet.splice(idx, 1);
+
+            chrome.storage.sync.set({ rules: ruleSet });
+            listRules();
+        });
+
+        $('.moveUp').click(function() {
+            let idx = parseInt($(this).attr('data-index'));
+            array_move(ruleSet, idx, idx - 1);
+            chrome.storage.sync.set({ rules: ruleSet });
+            listRules();
+        });
+
+        $('.moveDown').click(function() {
+            let idx = parseInt($(this).attr('data-index'));
+            array_move(ruleSet, idx, idx + 1);
+            chrome.storage.sync.set({ rules: ruleSet });
             listRules();
         });
     });
@@ -85,33 +125,32 @@ function listRules() {
 document.addEventListener('DOMContentLoaded', init_main);
 
 //handle enabling or disabling or the extension
-$('#regexStatus').on('switchChange.bootstrapSwitch', function (event, state) {
+$('#regexStatus').on('switchChange.bootstrapSwitch', function(event, state) {
     if (state) {
         chrome.storage.sync.set({
-            "regexStatus": 1
+            regexStatus: 1
         });
-    }
-    else {
+    } else {
         chrome.storage.sync.set({
-            "regexStatus": 0
+            regexStatus: 0
         });
     }
 });
 
 //handle rule addition
-$("#addRule").submit(function (e) {
+$('#addRule').submit(function(e) {
     e.preventDefault();
 
     ruleSet.push({
-        "key": Math.floor((Math.random() * 99999) + 10000),
-        "searchString": $("#search").val(),
-        "replaceString": $("#replace").val()
+        key: Math.floor(Math.random() * 99999 + 10000),
+        searchString: $('#search').val(),
+        replaceString: $('#replace').val()
     });
     chrome.storage.sync.set({
-        'rules': ruleSet
+        rules: ruleSet
     });
 
     listRules();
-    $("#search").val("");
-    $("#replace").val("");
+    $('#search').val('');
+    $('#replace').val('');
 });

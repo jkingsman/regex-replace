@@ -28,7 +28,7 @@
                 </p>
 
                 <hr />
-                <form action="#" id="addRule">
+                <form action="#" id="rule-form">
                     <div class="form-group row">
                         <label for="search" class="col-sm-3 col-form-label">Search regex</label>
                         <div class="col-sm-9">
@@ -53,8 +53,22 @@
                                 <option value="s">single line</option>
                             </select>
                         </div>
-					</div>
-					<input type="submit" class="btn btn-success" value="Add Rule"></input>
+                    </div>
+                    <input type="hidden" id="key" value="" />
+                    <input type="hidden" id="form-action" value="add" />
+                    <input type="submit" class="btn btn-success form-new" value="Add Rule" />
+                    <input
+                        type="submit"
+                        class="btn btn-primary form-editing hidden"
+                        value="Edit Rule"
+                        id="button-edit"
+                    />
+                    <input
+                        type="button"
+                        class="btn btn-secondary form-editing hidden"
+                        value="Cancel"
+                        id="button-cancel"
+                    />
                 </form>
                 <hr />
                 <table class="table table-striped">
@@ -69,8 +83,10 @@
                     <tbody id="tbody-rules"></tbody>
                 </table>
                 <hr />
-				<p>Rule are implemented in the following fashion to each <strong>text node</strong> in the DOM
-					(does not affect HTML elements):</p>
+                <p>
+                    Rule are implemented in the following fashion to each
+                    <strong>text node</strong> in the DOM (does not affect HTML elements):
+                </p>
                 <pre><code class="code-block"
                     >regex = new RegExp(<var>searchString</var>, <var>flags</var>);
 textNode = textNode.replace(regex, <var>replaceString</var>);</code></pre>

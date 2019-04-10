@@ -87,15 +87,21 @@ function listRules() {
                     <td>
                         ${moveUp}
                         ${moveDown}
-                        <a href="#" class="deleteButton" data-index="${i}" id="del-${rule.key}">
+                        <a href="#" class="delete-button" data-index="${i}" id="del-${rule.key}">
                             <i class="glyphicon glyphicon-trash"></i></a>
+                        <a 
+                            href="#" 
+                            class="edit-rule" 
+                            data-index="${i}" 
+                            data-key="edit-${rule.key}"
+                        ><i class="glyphicon glyphicon-pencil"></i></a>
                     </td>
                 </tr>`
             );
         });
 
         //attach delete function listener
-        $('.deleteButton').click(function() {
+        $('.delete-button').click(function() {
             if (!confirm('Are you sure?')) {
                 return;
             }
@@ -105,6 +111,25 @@ function listRules() {
 
             chrome.storage.sync.set({ rules: ruleSet });
             listRules();
+        });
+
+        $('.edit-rule').click(function() {
+            let idx = parseInt($(this).attr('data-index'));
+            let rule = ruleSet[idx];
+            let $flags = $('#flags');
+
+            $('#search').val(rule.searchString);
+            $('#replace').val(rule.replaceString);
+            $flags.val(rule.flags.split(''));
+            $flags.multiselect('refresh');
+            $('#key').val(rule.key);
+            $('#form-action').val('edit');
+            $('.form-new').addClass('hidden');
+            $('.form-editing').removeClass('hidden');
+        });
+
+        $('#button-cancel').click(function() {
+            reset();
         });
 
         $('.moveUp').click(function() {
@@ -140,23 +165,49 @@ $('#regexStatus').on('switchChange.bootstrapSwitch', function(event, state) {
 });
 
 //handle rule addition
-$('#addRule').submit(function(e) {
-    $search = $('#search');
-    $replace = $('#replace');
-    
+$('#rule-form').submit(function(e) {
     e.preventDefault();
+    
+    let action = $('#form-action').val();
+    let key = parseInt($('#key').val());
+    if (!key) {
+        key = Math.floor(Math.random() * 99999 + 10000);
+    }
+    let rule = {
+        key,
+        searchString: $('#search').val(),
+        replaceString: $('#replace').val(),
+        flags: $('#flags')
+            .val()
+            .join('')
+    };
 
-    ruleSet.push({
-        key: Math.floor(Math.random() * 99999 + 10000),
-        searchString: $search.val(),
-        replaceString: $replace.val(),
-        flags: $('#flags').val().join('')
-    });
+    if (action === 'add') {
+        ruleSet.push(rule);
+    } else {
+        ruleSet.forEach((r, idx) => {
+            if (r.key === key) {
+                ruleSet.splice(idx, 1, rule);
+            }
+        });
+    }
+
     chrome.storage.sync.set({
         rules: ruleSet
     });
 
     listRules();
-    $search.val('');
-    $replace.val('');
+    reset();
 });
+
+function reset() {
+    let $flags = $('#flags');
+    $('#search').val('');
+    $('#replace').val('');
+    $flags.val(['g']);
+    $flags.multiselect('refresh');
+    $('#key').val('');
+    $('#form-action').val('add');
+    $('.form-new').removeClass('hidden');
+    $('.form-editing').addClass('hidden');
+}

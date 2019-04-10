@@ -1,42 +1,81 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
     <head>
-	<title>Regex Replace Configuration</title>
-        <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"></link>
-        <script type="text/javascript" src="../js/jquery-1.9.1.min.js"></script>
+        <title>Regex Replace Configuration</title>
+        <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+        <script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="../js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="../js/bootstrap-switch.min.js"></script>
+        <script type="text/javascript" src="../js/bootstrap-switch.min.js"></script>
+        <script type="text/javascript" src="../js/bootstrap-multiselect.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="../css/main.css"></link>
-		<link rel="stylesheet" type="text/css" href="../css/bootstrap-switch.min.css"></link>
+        <link rel="stylesheet" type="text/css" href="../css/main.css" />
+        <link rel="stylesheet" type="text/css" href="../css/bootstrap-switch.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/bootstrap-multiselect.css" />
     </head>
     <body>
         <div id="main-outer-options">
             <div id="main-inner">
                 <div id="main-title">Regex Replace Configuration</div>
-				<p>Regex Replace is currently: <input type="checkbox" id="regexStatus" name="regexStatus" data-size="mini" checked></p>
-				<p>Rule are implemented in the following fashion:
-				<pre>regex = new RegExp(searchString, 'g');
-textNode = textNode.replace(regex, replaceString);</pre>That regex is then applied to all text nodes.</p>
-				<hr />
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Search</th>
-							<th>Replace</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody id="tbody-rules"></tbody>
-				</table>
-				<hr />
-				<form action="#" id="addRule">
-				    <label>Search regex: <input id="search"></label> 
-				    <label>Replace string: <input id="replace"></label> 
-				    <input type="submit" class="btn btn-success" value="Add Rule"></input>
-				</form>
-				<hr />
-				<a href="https://github.com/jkingsman/regex-replace">Find this on GitHub</a>
+                <p>
+                    Regex Replace is currently:
+                    <input
+                        type="checkbox"
+                        id="regexStatus"
+                        name="regexStatus"
+                        data-size="mini"
+                        checked
+                    />
+                </p>
+
+                <hr />
+                <form action="#" id="addRule">
+                    <div class="form-group row">
+                        <label for="search" class="col-sm-3 col-form-label">Search regex</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="search" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="replace" class="col-sm-3 col-form-label">Replace</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="replace" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="flags" class="col-sm-3 col-form-label">Flags</label>
+                        <div class="col-sm-9">
+                            <select id="flags" multiple="multiple">
+                                <option value="g" selected>global</option>
+                                <option value="m">multi line</option>
+                                <option value="i">insensitive</option>
+                                <option value="y">sticky</option>
+                                <option value="u">unicode</option>
+                                <option value="s">single line</option>
+                            </select>
+                        </div>
+					</div>
+					<input type="submit" class="btn btn-success" value="Add Rule"></input>
+                </form>
+                <hr />
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Search</th>
+                            <th>Replace</th>
+                            <th>Flags</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-rules"></tbody>
+                </table>
+                <hr />
+				<p>Rule are implemented in the following fashion to each <strong>text node</strong> in the DOM
+					(does not affect HTML elements):</p>
+                <pre><code class="code-block"
+                    >regex = new RegExp(<var>searchString</var>, <var>flags</var>);
+textNode = textNode.replace(regex, <var>replaceString</var>);</code></pre>
+                <hr />
+                <a href="https://github.com/jkingsman/regex-replace">Find this on GitHub</a>
             </div>
         </div>
 

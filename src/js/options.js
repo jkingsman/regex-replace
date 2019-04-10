@@ -5,6 +5,8 @@
 
 var ruleSet;
 
+$('#flags').multiselect();
+
 function init_main() {
     //get the current enabled state and rule list
     chrome.storage.sync.get('regexStatus', function(data) {
@@ -52,19 +54,19 @@ function array_move(arr, old_index, new_index) {
 }
 
 function listRules() {
-    $('#rules').empty();
     $('#tbody-rules').empty();
     chrome.storage.sync.get('rules', function(data) {
         if (typeof data.rules === 'undefined') {
             chrome.storage.sync.set({
                 rules: []
             });
-
             ruleSet = [];
         } else {
             ruleSet = data.rules;
         }
-
+        if (ruleSet.length === 0) {
+            $('#tbody-rules').append('<tr><td colspan="4">No regex rules set.</td></td>');
+        }
         //print out current rules
         ruleSet.forEach(function(rule, i) {
             let moveUp = '<i class="glyphicon glyphicon-stop"></i>';
@@ -81,12 +83,12 @@ function listRules() {
                 `<tr>
                     <td><code>${htmlEncode(rule.searchString)}</code></td>
                     <td><code>${htmlEncode(rule.replaceString)}</code></td>
+                    <td><code>${htmlEncode(rule.flags)}</code></td>
                     <td>
                         ${moveUp}
                         ${moveDown}
                         <a href="#" class="deleteButton" data-index="${i}" id="del-${rule.key}">
                             <i class="glyphicon glyphicon-trash"></i></a>
-                        
                     </td>
                 </tr>`
             );
@@ -139,18 +141,22 @@ $('#regexStatus').on('switchChange.bootstrapSwitch', function(event, state) {
 
 //handle rule addition
 $('#addRule').submit(function(e) {
+    $search = $('#search');
+    $replace = $('#replace');
+    
     e.preventDefault();
 
     ruleSet.push({
         key: Math.floor(Math.random() * 99999 + 10000),
-        searchString: $('#search').val(),
-        replaceString: $('#replace').val()
+        searchString: $search.val(),
+        replaceString: $replace.val(),
+        flags: $('#flags').val().join('')
     });
     chrome.storage.sync.set({
         rules: ruleSet
     });
 
     listRules();
-    $('#search').val('');
-    $('#replace').val('');
+    $search.val('');
+    $replace.val('');
 });

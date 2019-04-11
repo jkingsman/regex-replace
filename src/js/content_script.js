@@ -57,7 +57,12 @@ function handleText(textNode) {
     for (var i = 0; i < ruleSet.length; i++) {
         var rule = ruleSet[i];
 
-        regex = new RegExp(rule.searchString, 'g');
+        // for backwards compatibility
+        if (rule.flags == undefined) {
+            rule.flags = 'g';
+        }
+
+        regex = new RegExp(rule.searchString, rule.flags);
         if (v.match(regex)) {
             v = v.replace(regex, rule.replaceString);
         }
